@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 // Must change this value
-#define GRID_SIZE 10
+#define GRID_SIZE 135
 
 int grid[GRID_SIZE][GRID_SIZE] = {0};
 int rolls = 0;
@@ -23,26 +23,22 @@ void print_grid() {
     }
 }
 
-void count_grid() {
-    for (int y = 0; y < GRID_SIZE; y++) {
-        for (int x = 0; x < GRID_SIZE; x++) {
-            if (grid[x][y] < 4 && grid[x][y] != -1) {
-                rolls++;
-            }
-        }
-    }
-}
-
 int clear_grid() {
     int cleared = 0;
     for (int y = 0; y < GRID_SIZE; y++) {
         for (int x = 0; x < GRID_SIZE; x++) {
-            if (grid[x][y] < 4 && grid[x][y] != -1) {
-                grid[x][y] = -1;
-                cleared = 1;
+            if (grid[x][y] < 4) {
+                if (grid[x][y] != -1) {
+                    grid[x][y] = -1;
+                    rolls++;
+                    cleared = 1;
+                }
+            } else {
+                grid[x][y] = 0;
             }
         }
     }
+    return cleared;
 }
 
 void space_counter(int x_pos, int y_pos) {
@@ -72,7 +68,7 @@ void parse_file() {
     int x = 0, y = 0;
 
     // open file for read only
-    fp = fopen("4_test.txt", "r");
+    fp = fopen("4_input.txt", "r");
     while (fgets(line, sizeof(line), fp) != NULL) {
         for (x = 0; x < GRID_SIZE; x++) {
             if (line[x] == '@') {
@@ -87,10 +83,7 @@ void parse_file() {
 }
 
 void parse_grid() {
-    char line[256];
     int x = 0, y = 0;
-
-    // open file for read only
     for (y = 0; y < GRID_SIZE; y++) {
         for (x = 0; x < GRID_SIZE; x++) {
             if (grid[x][y] != -1) {
@@ -103,13 +96,10 @@ void parse_grid() {
 
 int main() {
     parse_file();
-    print_grid();
-    count_grid();
-    clear_grid();
-    parse_grid();
-    printf("\r\n");
-    print_grid();
-    count_grid();
+    while (clear_grid()) {
+        parse_grid();
+    }
+    //print_grid();
     printf("rolls: %i\r\n", rolls);
     return 0;
 }
